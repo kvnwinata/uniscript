@@ -1,0 +1,25 @@
+/*HOME*/
+
+.textarea-home{
+	width: 60%;
+}
+
+.center{
+	text-align: center;
+}
+
+#textarea-output{
+	margin: 0px auto;
+	border: 1px solid black;
+	margin-bottom: 20px;
+	margin-top: 20px;
+	margin-left: 1px;
+}
+
+#save_button{
+	margin-bottom: 50px;
+}
+
+.dropdown-cara{
+	width: 100%;
+}
