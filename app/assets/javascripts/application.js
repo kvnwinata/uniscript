@@ -15,13 +15,13 @@
 //= require_tree .
 
 $(document).ready(function(){
-	document.title = "Uniscript";
+  document.title = "Uniscript";
 
-	var canvas = document.getElementById('textarea-output');
-	var context = canvas.getContext('2d');
-	context.lineWidth = 2;
-	context.lineCap = 'round';
-	context.beginPath();
+  var canvas = document.getElementById('textarea-output');
+  var context = canvas.getContext('2d');
+  context.lineWidth = 2;
+  context.lineCap = 'round';
+  context.beginPath();
 
   var _m = function(x, y, r) {
     context.moveTo(x+2*r, y);
@@ -310,24 +310,25 @@ $(document).ready(function(){
   }
 
   var _t1 = function(x, y, r) {
+    return _comma(x, y-1.75*r, r);
+  }
+
+  var _t2 = function(x, y, r) {
     context.moveTo(x-0.625*r, y-1.75*r);
     context.lineTo(x+0.625*r, y-1.75*r);
     return x;
   }
 
-  var _t2 = function(x, y, r) {
-    return _comma(x, y-1.75*r, r);
+  var _t3 = function(x, y, r) {
+    return _comma(x, y+1.75*r, r);
   }
 
-  var _t3 = function(x, y, r) {
+  var _t4 = function(x, y, r) {
     context.moveTo(x-0.625*r, y+1.75*r);
     context.lineTo(x+0.625*r, y+1.75*r);
     return x;
   }
-
-  var _t4 = function(x, y, r) {
-    return _comma(x, y+1.75*r, r);
-  }
+  
 
   var topLeft = ['y', 'i'];
   var bottomRight = ['w', 'I'];
@@ -402,68 +403,68 @@ $(document).ready(function(){
   var margin = 1.5;
 
   var parse = function(text) {
-  	canvas.width = canvas.width;
-  	context.lineWidth = font_width_abs;
-  	context.lineCap = 'round';
+    canvas.width = canvas.width;
+    context.lineWidth = font_width_abs;
+    context.lineCap = 'round';
     context.strokeStyle = font_color;
     context.fillStyle = font_color;
 
-  	context.beginPath();
-  	var ch;
+    context.beginPath();
+    var ch;
 
-  	var ar = font_size/2;
-  	var ax = ar*margin;
-  	var ay = ar*(margin+2.5);
-  	var orig_x = ax;
-  	var prevCh = '\n';
-  	var wordStartIdx = 0;
-  	var wordStartPos = ax;
-  	var numLines = 1;
+    var ar = font_size/2;
+    var ax = ar*margin;
+    var ay = ar*(margin+2.5);
+    var orig_x = ax;
+    var prevCh = '\n';
+    var wordStartIdx = 0;
+    var wordStartPos = ax;
+    var numLines = 1;
 
-  	var lineBreak = function(i) {
-  		ax = orig_x;
-  		ay += 6*ar;
-  		wordStartIdx = i+1;
-  		wordStartPos = ax;
-  		numLines ++;
-  		prevCh = '\n';
-  	}
+    var lineBreak = function(i) {
+      ax = orig_x;
+      ay += 6*ar;
+      wordStartIdx = i+1;
+      wordStartPos = ax;
+      numLines ++;
+      prevCh = '\n';
+    }
 
-  	var breakLocations = [];
+    var breakLocations = [];
 
-  	for (var i = 0; i < text.length; i++) {
-  		ch = text[i];
-  		if (ch == '\n') {
-  			lineBreak(i);
-  		} else if (ch == ' ') {
-  			prevCh = ch;
-  			ax = draw(ch, ax, ay, ar);
-  			wordStartIdx = i+1;
-  			wordStartPos = ax;
-  		} else if (diacs.indexOf(ch)!=-1) {
+    for (var i = 0; i < text.length; i++) {
+      ch = text[i];
+      if (ch == '\n') {
+        lineBreak(i);
+      } else if (ch == ' ') {
+        prevCh = ch;
+        ax = draw(ch, ax, ay, ar);
+        wordStartIdx = i+1;
+        wordStartPos = ax;
+      } else if (diacs.indexOf(ch)!=-1) {
         draw(ch, ax-getWidth(prevCh)*ar/2, ay, ar);
       } else {
         ax += kern(prevCh, ch) * ar;
         prevCh = ch;
-  			if (ax > canvas.width - (getWidth(ch)+getExtraWidth(ch)+margin)*ar) { // line break
-  				if (wordStartPos > orig_x) { // break whole word
-  					breakLocations.push(wordStartIdx);
-  					i = wordStartIdx-1;
-  					context.stroke();
-  					context.beginPath();
-  					lineBreak(i);
-  					continue;
-  				}
-  				ax = orig_x;
-  				ay += 6*ar;
-  				ax += kern('\n', ch) * ar;
-  			}
-  			ax = draw(ch, ax, ay, ar);
-  		}
-  	}
-  	context.stroke();
+        if (ax > canvas.width - (getWidth(ch)+getExtraWidth(ch)+margin)*ar) { // line break
+          if (wordStartPos > orig_x) { // break whole word
+            breakLocations.push(wordStartIdx);
+            i = wordStartIdx-1;
+            context.stroke();
+            context.beginPath();
+            lineBreak(i);
+            continue;
+          }
+          ax = orig_x;
+          ay += 6*ar;
+          ax += kern('\n', ch) * ar;
+        }
+        ax = draw(ch, ax, ay, ar);
+      }
+    }
+    context.stroke();
 
-  	return {w: ax+(getExtraWidth(ch)+margin)*ar, h: ay+(margin+2.5)*ar, n: numLines, b: breakLocations};
+    return {w: ax+(getExtraWidth(ch)+margin)*ar, h: ay+(margin+2.5)*ar, n: numLines, b: breakLocations};
   }
 
   var draw = function(ch, ax, ay, ar) {
@@ -527,18 +528,18 @@ $(document).ready(function(){
   extraWidths = {'G': 1.5, 'h': 1.5};
 
   var getWidth = function(ch) {
-  	if (typeof(widths[ch]) == 'undefined') {
-    	var wid = draw(ch, 0, -1000, 1);
-    	widths[ch] = wid;
+    if (typeof(widths[ch]) == 'undefined') {
+      var wid = draw(ch, 0, -1000, 1);
+      widths[ch] = wid;
     }
     return widths[ch];
   }
 
   var getExtraWidth = function(ch) {
-  	if (typeof(extraWidths[ch]) != 'undefined')
-  		return extraWidths[ch];
-  	else
-  		return 0;
+    if (typeof(extraWidths[ch]) != 'undefined')
+      return extraWidths[ch];
+    else
+      return 0;
   }
 
   //Sample texts
@@ -547,20 +548,20 @@ $(document).ready(function(){
   var en = "Ol hyUwmIn biyixz Ar bOrn friy and iykwIl in digniti and rayts . Dey Ar endawd wiD riyzIn and kAnSIns and SUd akt tIwOrdz wEn InEDIr in ey spirit Ev brEDIrhUd ."
   var zh = "ZE2nZE2n SE1x E2Z DI4qiU2 , Da4i DU1nqia2n KE2 Tua2nli4 Sa4x qi2lu4 pi2xdE3x . ta1mEn fU4qiU3 li3si4x KE2 lia2xsi1n , bi4x qi1x qi3 siU1xdi4 gUa1nsi4 de Di1xSE2n KU4sia1x dUi4da4i .";
   var ru = "vse ludi rOZdAutsa svObOdnImi i rAvnImi v svOem dOstOinstve i prAvAK . Oni nAdelenI rAzUmom i sOvestyu i dOlZnI pOstUpAty v OtnOSenii drUg drUgA v dUKe brAtstva .";
-  var es = "tOdOs lOs seres UmanOs naTen libres e igUales en dignidad i derecOs i , dOtadOs kOmO esta2n de raTO2n i kOnTienTia , deben kOmpOrtarse fraternalmente lOs UnOs kOn lOs OtrOs .";
-  var el = "O2li A2nTrOpi GeniU2nte ele2vTeri ke i2si stin aksiOpre2pia ke ta DikeO2mata . i2ne prikisme2ni me lOGiki2 ke sini2Disi , ke Ofi2lUn na simperife2rOnte metaksi2 tUs me pne2vma aDelfOsi2nis .";
+  var es = "tOdOs lOs seres UmAnOs nATen libres e igUAles en dignidAd i derecOs i , dOtAdOs kOmO estA1n de rATO1n i kOnTienTiA , deben kOmpOrtArse frAternAlmente lOs UnOs kOn lOs OtrOs .";
+  var el = "O1li a1nTrOpi GeniU1nte ele1vTeri ke i1si stin aksiOpre1pia ke ta DikeO1mata . i1ne prikisme1ni me lOGiki1 ke sini1Disi , ke Ofi1lUn na simperife1rOnte metaksi1 tUs me pne1vma aDelfOsi1nis .";
   var sw = "wAtU wOte wAmezAliwA hUrU , hADi nA hAki zAO ni sAwA . wOte wAmejAliwA Akili nA DAmiri , hivyO yApAsA wAtendeAne kindUgU .";
-  var nv = "bilAqASdAqii tqA2A2 qArTOh yini2kqehgO bidiZcixh dO2O2 qAKeertqeegO qi2li2i2xgO bee bAAKO2cixq . qei2i2 KA2ni2q dO2O2 KA2ni2TKAkees KwiihdAAsyAq qei2i2 binAhji2xq qAKidini2rnA2hgO qA2li2leekqehgO kqe2 bee qAKir niid3i2x .";
-  var hi = "sAbqi1 mAnUs2yOx kO gAUrAw AUr ADqikA1rOx ke mA1mAle mex jAnmAjA1T swATAnTrATA1 AUr sAmA1nATA1 prA1pT hAi . Unhex bUDDqi AUr AnTArA1TmA1 ki1 den prA1pT hAi AUr pArAspAr Unex bqA1i1cA1re ke bqA1w se bArTA1w kArAnA1 cA1hie .";
+  var nv = "bilAqASdAqii tqA1A1 qArTOh yini1kqehgO bidiZci4h dO1O1 qAKeertqeegO qi1li14i14gO bee bAAKO1ci4q . qei1i1 KA1ni1q dO1O1 KA1ni1TKAkees KwiihdAAsyAq qei1i1 binAhji14q qAKidini1rnA1hgO qA1li1leekqehgO kqe1 bee qAKir niid4i14 .";
+  var hi = "sAbqi2 mAnUs1yOx kO gO3rAw O3r ADqikA2rOx ke mA2mAle mex jAnmAjA2T swATAnTrATA2 O3r sAmA2nATA2 prA2pT he3 . Unhex bUDDqi O3r AnTArA2TmA2 ki2 den prA2pT he3 O3r pArAspAr Unhex bqA2i2cA2re ke bqA2w se bArTA2w kArAnA2 cA2hie .";
   var ko = "mOdIn ingAnIn taEnAl ddabUtE DAyUlOUmyE gI DOnEmgwA gwEnlie issE dOxdIxhAdA . ingAnIn TEnbUDEgIlO isExgwA yAxsimIl bUyEbAdAssImyE sElO hyExDeawi DExsinIlO haxdOxhAyEyA hAndA .";
   var ja = "sIbete nO nixgex wa , Imarenagara ni site ziyII de ari , katI , sOxgex tO kexri tO ni tIite byOIdOI de arI . nixgex wa , risei tO ryOIsix tO O sazIkerarete Ori , tagai ni dOIhOI nO seisix O mOtte kOIdOI sinakereba naranai .";
-  var ar = "yU1ladU jami1G4U anna1si qaK2ra1ran mUtasa1wi1na fi1 alcara1mati walK2UkU1k . wakad wUhibU1 G4aklan wad4ami1ran waG4alayhim qan yUG4a1mila baG4d4UhUm baG4d4an birU1K2i alqiKa1q .";
-  var hu = "minden emberi le1N sAbAdOn suletik e1S eGenlo1 me1ltO1SA1gA e1S yOgA vAn . Az emberek , e1ssel e1S lelkiiSmerettel bi1rvA1n , eGmA1SSAl semben teStve1ri sellemben kell hOG viSelteSSenek .";
-  var fr = "tU lez e4tr ume3 ne4s libr e egO A3 diNite e A3 drUa . il sO3 dUe dE re4zO3 e dE kO3siA3s e dUavt aZir lez o3 A3ve4r lez Otr dA3z o3n e4spri dE frate4rnite .";
-  var de = "AlE menSEn zind frAi Und glAiK An vurdE Und reKtEn gEbO1rEn . zi1 zind mit fErnUnft Und gEvisEn bEgA1bt Und zOlEn AinAndEr im gAist de1r bru1dErliKkAit bEge1gnEn .";
+  var ar = "yU2ladU jami2G3U anna2si qaK1ra2ran mUtasa2wi2na fi2 alcara2mati walK1UkU2k . wakad wUhibU2 G3aklan wad3ami2ran waG3alayhim qan yUG3a2mila baG3d3UhUm baG3d3an birU2K1i alqiKa2q .";
+  var hu = "minden emberi le2N sAbAdOn suletik e2S eGenlo2 me2ltO2SA2gA e2S yOgA vAn . Az emberek , e2ssel e2S lelkiiSmerettel bi2rvA2n , eGmA2SSAl semben teStve2ri sellemben kell hOG viSelteSSenek .";
+  var fr = "tU lez e3tr ume4 ne3s libr e egO A4 diNite e A4 drUa . il sO4 dUe dE re3zO4 e dE kO4siA4s e dUavt aZir lez o4 A4ve3r lez Otr dA4z o4n e3spri dE frate3rnite .";
+  var de = "AlE menSEn zind frAi Und glAiK An vurdE Und reKtEn gEbO2rEn . zi2 zind mit fErnUnft Und gEvisEn bEgA2bt Und zOlEn AinAndEr im gAist de2r bru2dErliKkAit bEge2gnEn .";
   var fa = "tamAme afrAde baSar AzAd be dOnyA miAyand va az lehAze heysiyat va hOGUG bA ham barAbarand , hame dArAye aGl va vejdAn mibASand va bAyad nesbat be yekdigar bA rUhe barAdari raftAr kOnand .";
   var th = "rAw TU1g kOn gEE3D mAA yAA3x qi3DsA3rA3 , rAw TU1g kOn mii kwAAm ki1D la1 kwAAm kA4w jAy ben koo2x rAw qeex , rAw TU1g kOn kUUAn zAA4y rA1b gAAn bA3Ti3vA3D nAy TAAx ziiAw gan .";
-  var cy = "genir pAUb En SED AK En gEdrAD A1qi gilED meUn IrDAs A hAUliAI . veqI kEnEsgAeDir A1 SesUm A KEdUEbOd , A dElAi pAUb EmDUEn E nAir At E rAr meUn EsbrEd kEmOdlOn .";
+  var cy = "genir pAUb En SED AK En gEdrAD A2qi gilED meUn IrDAs A hAUliAI . veqI kEnEsgAeDir A2 SesUm A KEdUEbOd , A dElAi pAUb EmDUEn E nAir At E rAr meUn EsbrEd kEmOdlOn .";
 
   var all = "pbfvmtdTDszncjSZNkgKGxqhlryw , aeiuoAEIUO .";
 
@@ -572,43 +573,43 @@ $(document).ready(function(){
     //sample texts
     if (text == '***') text = all;
     else if (text == '*tr*') text = tr;
-		else if (text == '*id*') text = id;
-		else if (text == '*en*') text = en;
-		else if (text == '*zh*') text = zh;
-		else if (text == '*ru*') text = ru;
-		else if (text == '*es*') text = es;
-		else if (text == '*el*') text = el;
-		else if (text == '*sw*') text = sw;
-		else if (text == '*nv*') text = nv;
-		else if (text == '*hi*') text = hi;
-		else if (text == '*ko*') text = ko;
-		else if (text == '*ja*') text = ja;
-		else if (text == '*ar*') text = ar;
-		else if (text == '*hu*') text = hu;
-		else if (text == '*fr*') text = fr;
-		else if (text == '*de*') text = de;
-		else if (text == '*fa*') text = fa;
-		else if (text == '*th*') text = th;
-		else if (text == '*cy*') text = cy;
-		return text;
+    else if (text == '*id*') text = id;
+    else if (text == '*en*') text = en;
+    else if (text == '*zh*') text = zh;
+    else if (text == '*ru*') text = ru;
+    else if (text == '*es*') text = es;
+    else if (text == '*el*') text = el;
+    else if (text == '*sw*') text = sw;
+    else if (text == '*nv*') text = nv;
+    else if (text == '*hi*') text = hi;
+    else if (text == '*ko*') text = ko;
+    else if (text == '*ja*') text = ja;
+    else if (text == '*ar*') text = ar;
+    else if (text == '*hu*') text = hu;
+    else if (text == '*fr*') text = fr;
+    else if (text == '*de*') text = de;
+    else if (text == '*fa*') text = fa;
+    else if (text == '*th*') text = th;
+    else if (text == '*cy*') text = cy;
+    return text;
   }
 
   // parse, add line breaks, and adjust the canvas height
   var parse_adjust = function(text, min_height) {
-  	var text_info = parse(text); // layout parse
-  	text_height = text_info.h;
-  	text_width = text_info.w;
-  	num_lines = text_info.n;
-  	break_locations = text_info.b.reverse();
+    var text_info = parse(text); // layout parse
+    text_height = text_info.h;
+    text_width = text_info.w;
+    num_lines = text_info.n;
+    break_locations = text_info.b.reverse();
 
-  	// add line breaks
-  	for (var i = 0; i < break_locations.length; i++) {
-  		var loc = break_locations[i];
-  		text = text.substr(0, loc) + '\n' + text.substr(loc);
-  	}
+    // add line breaks
+    for (var i = 0; i < break_locations.length; i++) {
+      var loc = break_locations[i];
+      text = text.substr(0, loc) + '\n' + text.substr(loc);
+    }
 
-		canvas.height = Math.max(text_height, min_height);
-		parse(text);
+    canvas.height = Math.max(text_height, min_height);
+    parse(text);
   }
 
   // Default values
@@ -631,55 +632,55 @@ $(document).ready(function(){
     font_size = parseInt($(this).val());
     font_width_abs = font_size/16 * font_width;
     var input_text = convert_text($(".textarea-home#input").val());
-		parse_adjust(input_text, min_height);
+    parse_adjust(input_text, min_height);
   });
 
   $("#font-width").change(function(){
     font_width = parseInt($(this).val());
     font_width_abs = font_size/16 * font_width;
     var input_text = convert_text($(".textarea-home#input").val());
-		parse_adjust(input_text, min_height);
+    parse_adjust(input_text, min_height);
   });
 
   $("#font-color").change(function(){
     font_color = $(this).val();
     var input_text = convert_text($(".textarea-home#input").val());
-		parse_adjust(input_text, min_height);
-	});
+    parse_adjust(input_text, min_height);
+  });
 
-	// Textarea input listens to keypress events.
-	$(".textarea-home#input").keyup(function(){
-		var input_text = convert_text($(this).val());
-		parse_adjust(input_text, min_height);
-	});
+  // Textarea input listens to keypress events.
+  $(".textarea-home#input").keyup(function(){
+    var input_text = convert_text($(this).val());
+    parse_adjust(input_text, min_height);
+  });
 
-	$("#save_button").click(function(){
-		if (text_height < min_height || num_lines < 2) {
-			var input_text = convert_text($(".textarea-home#input").val());
-			var prev_height = canvas.height;
-			canvas.height = Math.ceil(text_height);
-			if (num_lines < 2)
-				canvas.width = Math.ceil(text_width);
-			parse_adjust(input_text, 0);
-			$(this).attr('href', canvas.toDataURL());
-			
-			//return to original
-			canvas.width = min_width;
-			canvas.height = prev_height;
-			parse_adjust(input_text, min_height);
-		} else {
-			$(this).attr('href', canvas.toDataURL());
-		}
-	});
+  $("#save_button").click(function(){
+    if (text_height < min_height || num_lines < 2) {
+      var input_text = convert_text($(".textarea-home#input").val());
+      var prev_height = canvas.height;
+      canvas.height = Math.ceil(text_height);
+      if (num_lines < 2)
+        canvas.width = Math.ceil(text_width);
+      parse_adjust(input_text, 0);
+      $(this).attr('href', canvas.toDataURL());
+      
+      //return to original
+      canvas.width = min_width;
+      canvas.height = prev_height;
+      parse_adjust(input_text, min_height);
+    } else {
+      $(this).attr('href', canvas.toDataURL());
+    }
+  });
 
-	$(window).resize(function() {
-		min_width = $(window).width() * width_ratio;
+  $(window).resize(function() {
+    min_width = $(window).width() * width_ratio;
     canvas.width = min_width;
     var input_text = convert_text($(".textarea-home#input").val());
-		parse_adjust(input_text, min_height);
-	});
+    parse_adjust(input_text, min_height);
+  });
 
-	var input_text = convert_text($(".textarea-home#input").val());
-	parse_adjust(input_text, min_height);
+  var input_text = convert_text($(".textarea-home#input").val());
+  parse_adjust(input_text, min_height);
 
 });
